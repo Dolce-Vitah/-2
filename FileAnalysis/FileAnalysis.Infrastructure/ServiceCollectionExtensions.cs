@@ -17,20 +17,16 @@ namespace FileAnalysis.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
         {
-            //services.AddScoped<NpgsqlConnection>(_ =>
-            //{
-            //    var connectionString = config.GetConnectionString("Postgres");
-            //    var conn = new NpgsqlConnection(connectionString);
-            //    conn.Open();
-            //    return conn;
-            //});
-
-            services.AddDbContext<AnalysisDbContext>((serviceProvider, options) =>
+            services.AddScoped<NpgsqlConnection>(_ =>
             {
-                var connectionString = config.GetConnectionString("Postgres");
-
-                options.UseNpgsql(connectionString);
+                var connectionString = config.GetConnectionString("DefaultConnection");
+                var conn = new NpgsqlConnection(connectionString);
+                conn.Open();
+                return conn;
             });
+
+            services.AddDbContext<AnalysisDbContext>(options =>
+                options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IAnalysisRepository, AnalysisRepository>();
 

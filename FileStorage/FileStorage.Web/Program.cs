@@ -1,8 +1,15 @@
 using FileStorage.Infrastructure;
+using FileStorage.Infrastructure.Database;
 using FileStorage.UseCases;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 builder.Services.AddUseCases();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -16,6 +23,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
 
 if (app.Environment.IsDevelopment())
 {

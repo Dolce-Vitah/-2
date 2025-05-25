@@ -36,7 +36,7 @@ services:
       - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Postgres=Host=postgres;Port=5432;Username=postgres;Password=postgres;Database=filestorage
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Username=postgres;Password=postgres;Database=filestorage
     ports:
       - "5001:8080"
     volumes:
@@ -51,7 +51,7 @@ services:
       - analysis-postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Postgres=Host=analysis-postgres;Port=5432;Username=analysis;Password=analysis;Database=fileanalysis
+      - ConnectionStrings__DefaultConnection=Host=analysis-postgres;Port=5432;Username=analysis;Password=analysis;Database=fileanalysis
     ports:
       - "5002:8080"
 

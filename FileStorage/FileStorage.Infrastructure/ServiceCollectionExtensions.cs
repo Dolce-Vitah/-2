@@ -18,20 +18,16 @@ namespace FileStorage.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
         {
-            //services.AddScoped<NpgsqlConnection>(_ =>
-            //{
-            //    var connectionString = config.GetConnectionString("Postgres");
-            //    var conn = new NpgsqlConnection(connectionString);
-            //    conn.Open();
-            //    return conn;
-            //});
-
-            services.AddDbContext<FileDbContext>((serviceProvider, options) =>
+            services.AddScoped<NpgsqlConnection>(_ =>
             {
-                var connectionString = config.GetConnectionString("Postgres");
+                var connectionString = config.GetConnectionString("DefaultConnection");
+                var conn = new NpgsqlConnection(connectionString);
+                conn.Open();
+                return conn;
+            });
 
-                options.UseNpgsql(connectionString);
-            });   
+            services.AddDbContext<FileDbContext>(options =>
+                options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileStorage, LocalFileStorage>();

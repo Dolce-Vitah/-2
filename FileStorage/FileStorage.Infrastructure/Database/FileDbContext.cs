@@ -15,7 +15,7 @@ namespace FileStorage.Infrastructure.Database
             : base(options)
         {
         }
-        public DbSet<StoredFile> Files { get; set; } = null!;
+        public virtual DbSet<StoredFile> Files { get; set; } = null!;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<StoredFile>()

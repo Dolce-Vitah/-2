@@ -14,7 +14,7 @@ namespace FileAnalysis.Infrastructure.Database
             : base(options)
         {
         }
-        public DbSet<AnalysisResult> AnalysisResults { get; set; } = null!;
+        public virtual DbSet<AnalysisResult> AnalysisResults { get; set; } = null!;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AnalysisResult>()
