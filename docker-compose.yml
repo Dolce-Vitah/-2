@@ -1,0 +1,76 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: filestorage
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  analysis-postgres:
+    image: postgres:15
+    container_name: analysis-postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: analysis
+      POSTGRES_PASSWORD: analysis
+      POSTGRES_DB: fileanalysis
+    ports:
+      - "5433:5432"
+    volumes:
+      - analysis_postgres_data:/var/lib/postgresql/data
+
+  file-storing:
+    build: 
+      context: .
+      dockerfile: FileStorage.Dockerfile
+    container_name: file-storing
+    depends_on:
+      - postgres
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Postgres=Host=postgres;Port=5432;Username=postgres;Password=postgres;Database=filestorage
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./file-storing/StoredFiles:/app/StoredFiles
+
+  file-analysis:
+    build:
+      context: .
+      dockerfile: FileAnalysis.Dockerfile
+    container_name: file-analysis
+    depends_on:
+      - analysis-postgres
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Postgres=Host=analysis-postgres;Port=5432;Username=analysis;Password=analysis;Database=fileanalysis
+    ports:
+      - "5002:8080"
+
+  api-gateway:
+    build: 
+      context: .
+      dockerfile: Gateway.Dockerfile
+    container_name: api-gateway
+    depends_on:
+      - file-storing
+      - file-analysis
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Services__FileStorage=http://file-storing
+      - Services__FileAnalysis=http://file-analysis
+    ports:
+      - "5000:8080"
+
+volumes:
+  postgres_data:
+  analysis_postgres_data:
+   
